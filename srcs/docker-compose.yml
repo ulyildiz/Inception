@@ -1,0 +1,55 @@
+version: "3.8"
+
+services:
+  mariadb:
+    container_name: mariadb
+    build: ./Container/MariaDB
+    volumes:
+      - mariadb:/var/lib/mysql
+    expose:
+      - 3306
+    restart: on-failure
+
+  wordpress:
+    container_name: wordpress
+    build: ./Container/WordPress
+    restart: on-failure
+    volumes:
+      - wordpress:/var/www/html
+    expose:
+      - 9000
+      - 3306
+    depends_on:
+      - mariadb
+  
+  nginx:
+    container_name: nginx
+    build: ./Container/NGINX
+    restart: on-failure
+    volumes:
+      -wordpress:/var/www/html
+    expose:
+      - 9000
+    ports:
+      - 443:443
+    depends_on:
+      - mariadb
+      - wordpress
+
+volumes:
+  mariadb:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind    
+      device: ${HOME}/data/mariadb
+  wordpress:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${HOME}/data/wordpress
+
+secrets:
+  
+networks:
