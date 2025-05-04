@@ -9,4 +9,4 @@ COPY ./conf/db.cnf /etc/mysql/conf.d
 RUN chmod +x /db_setup.sh
 
 ENTRYPOINT ["/db_setup.sh"]
-#CMD
+CMD ["mysql"]
