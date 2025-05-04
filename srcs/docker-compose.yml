@@ -6,6 +6,8 @@ services:
     build: ./Container/MariaDB
     volumes:
       - mariadb:/var/lib/mysql
+    networks:
+      - inception
     expose:
       - 3306
     restart: on-failure
@@ -16,6 +18,8 @@ services:
     restart: on-failure
     volumes:
       - wordpress:/var/www/html
+    networks:
+      - inception
     expose:
       - 9000
       - 3306
@@ -28,6 +32,8 @@ services:
     restart: on-failure
     volumes:
       -wordpress:/var/www/html
+    networks:
+      - inception
     expose:
       - 9000
     ports:
@@ -53,3 +59,8 @@ volumes:
 secrets:
   
 networks:
+  inception:
+    name: "inception"
+    driver: bridge
+
+    
