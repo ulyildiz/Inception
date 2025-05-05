@@ -1,0 +1,8 @@
+[server]
+[mysqld]
+user = mysql
+port = 3306
+datadir = /var/lib/mysql
+log_error = /var/log/mysql/error.log
+lc-messages = en_US
+character-set-server = utf8mb4

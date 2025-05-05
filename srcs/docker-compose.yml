@@ -1,9 +1,7 @@
-version: "3.8"
-
 services:
   mariadb:
     container_name: mariadb
-    build: ./Container/MariaDB
+    build: ./Containers/MariaDB
     restart: on-failure
     volumes:
       - mariadb:/var/lib/mysql
@@ -17,7 +15,7 @@ services:
 
   wordpress:
     container_name: wordpress
-    build: ./Container/WordPress
+    build: ./Containers/WordPress
     restart: on-failure
     volumes:
       - wordpress:/var/www/html
@@ -31,10 +29,10 @@ services:
   
   nginx:
     container_name: nginx
-    build: ./Container/NGINX
+    build: ./Containers/NGINX
     restart: on-failure
     volumes:
-      -wordpress:/var/www/html
+      - wordpress:/var/www/html
     networks:
       - inception
     expose:
