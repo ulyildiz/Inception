@@ -1,3 +1,28 @@
+networks:
+  inception:
+    name: "inception"
+    driver: bridge
+
+secrets:
+  db_password:
+    file: ./secrets/db_password.txt
+  db_root_password:
+    file: ./secrets/db_root_password.txt
+
+volumes:
+  mariadb:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind    
+      device: ${HOME}/data/mariadb
+  wordpress:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${HOME}/data/wordpress
+
 services:
   mariadb:
     container_name: mariadb
@@ -42,30 +67,3 @@ services:
     depends_on:
       - mariadb
       - wordpress
-
-volumes:
-  mariadb:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind    
-      device: ${HOME}/data/mariadb
-  wordpress:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${HOME}/data/wordpress
-
-secrets:
-  db_password:
-    file: ./secrets/db_password.txt
-  db_root_password:
-    file: ./secrets/db_root_password.txt
-  
-networks:
-  inception:
-    name: "inception"
-    driver: bridge
-
-    

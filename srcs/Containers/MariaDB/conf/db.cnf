@@ -1,8 +1,21 @@
 [server]
 [mysqld]
+
 user = mysql
 port = 3306
+bind-address = 0.0.0.0
 datadir = /var/lib/mysql
+socket = /run/mysqld/mysqld.sock
+
+character-set-server = utf8mb4
+collation-server = utf8mb4_unicode_ci
 log_error = /var/log/mysql/error.log
 lc-messages = en_US
-character-set-server = utf8mb4
+
+wait-timeout = 28800
+
+sql_mode=NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES
+
+skip-name-resolve
+skip-host-cache
+
