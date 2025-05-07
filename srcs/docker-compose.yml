@@ -5,9 +5,9 @@ networks:
 
 secrets:
   db_password:
-    file: ./secrets/db_password.txt
+    file: ../secrets/db_password.txt
   db_root_password:
-    file: ./secrets/db_root_password.txt
+    file: ../secrets/db_root_password.txt
 
 volumes:
   mariadb:
@@ -28,6 +28,8 @@ services:
     container_name: mariadb
     build: ./Containers/MariaDB
     restart: on-failure
+    env_file:
+      - ./Containers/MariaDB/.env
     volumes:
       - mariadb:/var/lib/mysql
     networks:

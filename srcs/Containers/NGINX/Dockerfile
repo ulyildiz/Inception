@@ -1,8 +1,7 @@
 FROM alpine:latest
 
 RUN apk update && apk upgrade && \
-	apk add --no-cache nginx openssl \
-	&& mkdir -p /run/nginx
+	apk add --no-cache nginx
 
 COPY ./tools/nginx_setup.sh /
 COPY ./conf/nginx.conf /etc/nginx/nginx.conf

@@ -1,10 +1,12 @@
+SRCS_FILE = ./srcs 
+
 all: up
 
-up: setup
-
-setup:
+up:
+	@docker-compose -f $(SRCS_FILE)/docker-compose.yml up -d --build
 
 down:
+	@docker-compose -f $(SRCS_FILE)/docker-compose.yml down
 
 clean:
 
