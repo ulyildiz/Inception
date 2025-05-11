@@ -9,4 +9,3 @@ COPY ./conf/nginx.conf /etc/nginx/nginx.conf
 RUN chmod +x /nginx_setup.sh
 
 ENTRYPOINT ["/nginx_setup.sh"]
-#CMD

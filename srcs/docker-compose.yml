@@ -51,6 +51,9 @@ services:
     expose:
       - 9000
       - 3306
+    secrets:
+      - db_password
+      - db_root_password
     depends_on:
       - mariadb
   
