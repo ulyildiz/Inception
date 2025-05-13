@@ -49,7 +49,7 @@ fi
 
 echo -e "${YELLOW}Configuring MariaDB users and privileges...${RESET}"
 
-mariadbd-safe --skip-networking & sleep 5
+mariadbd-safe & sleep 5
 
 echo -e "${YELLOW} ${MARIADB_DATABASE} ${RESET}"
 

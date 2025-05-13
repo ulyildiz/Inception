@@ -44,6 +44,8 @@ services:
     container_name: wordpress
     build: ./Containers/WordPress
     restart: on-failure
+    env_file:
+      - ./Containers/WordPress/.env
     volumes:
       - wordpress:/var/www/html
     networks:
