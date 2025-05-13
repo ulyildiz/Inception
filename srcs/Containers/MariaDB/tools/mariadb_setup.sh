@@ -51,8 +51,6 @@ echo -e "${YELLOW}Configuring MariaDB users and privileges...${RESET}"
 
 mariadbd-safe & sleep 5
 
-echo -e "${YELLOW} ${MARIADB_DATABASE} ${RESET}"
-
 echo -e "${YELLOW}Altering root user's password...${RESET}"
 mariadb -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '${MARIADB_ROOT_PASSWORD}';"
 

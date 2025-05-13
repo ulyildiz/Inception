@@ -68,6 +68,7 @@ services:
     networks:
       - inception
     expose:
+      - 433
       - 9000
     ports:
       - 443:443
