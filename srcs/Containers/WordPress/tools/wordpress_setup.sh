@@ -14,7 +14,7 @@ done
 echo -e "${BLUE}MariaDB is ready!${RESET}"
 # wait mariadb
 
-WP_PATH="/var/www/html/wordpress"
+WP_PATH="/var/www/html"
 
 if [ -f "${WP_PATH}/wp-config.php" ]; then
 	echo -e "${YELLOW}WordPress is already installed.${RESET}"
@@ -22,9 +22,9 @@ else
 	echo -e "${YELLOW}Setup WordPress...${RESET}"
 	wp-cli.phar cli update --yes --allow-root
 	echo -e "${YELLOW}Downloading WordPress...${RESET}"
+	mkdir -p "${WP_PATH}"
 	php -d memory_limit=512M /usr/local/bin/wp-cli.phar core download --path="${WP_PATH}" --allow-root
 	echo -e "${YELLOW}Creating wp-config.php...${RESET}"
-	mkdir -p "${WP_PATH}"
 	php -d memory_limit=512M /usr/local/bin/wp-cli.phar config create \
     --dbname="${MARIADB_DATABASE}" \
     --dbuser="${MARIADB_USER}" \
@@ -32,6 +32,12 @@ else
     --dbhost="${DB_HOST}" \
     --path="${WP_PATH}" \
     --allow-root
+    
+    # Set proper permissions
+    chown -R www:www "${WP_PATH}"
+    chmod -R 755 "${WP_PATH}"
+    
+    echo -e "${GREEN}WordPress setup completed!${RESET}"
 fi
 echo -e "${YELLOW}Starting${RESET}"
 

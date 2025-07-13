@@ -8,6 +8,10 @@ secrets:
     file: ../secrets/db_password.txt
   db_root_password:
     file: ../secrets/db_root_password.txt
+  nginx_domain:
+    file: ../secrets/nginx.txt
+  ssl_config:
+    file: ../secrets/ssl_config.txt
 
 volumes:
   mariadb:
@@ -63,15 +67,20 @@ services:
     container_name: nginx
     build: ./Containers/NGINX
     restart: on-failure
+    env_file:
+      - ./Containers/NGINX/.env
     volumes:
       - wordpress:/var/www/html
     networks:
       - inception
     expose:
-      - 433
+      - 443
       - 9000
     ports:
       - 443:443
+    secrets:
+      - nginx_domain
+      - ssl_config
     depends_on:
       - mariadb
       - wordpress

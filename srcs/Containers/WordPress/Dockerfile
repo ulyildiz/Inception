@@ -17,10 +17,14 @@ RUN wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.ph
 
 RUN ln -sf /usr/bin/php82 /usr/bin/php
 
+RUN adduser -D -g 'www' www && \
+    mkdir -p /var/www/html && \
+    chown -R www:www /var/www/html && \
+    chmod -R 755 /var/www/html
+
 
 COPY ./tools/wordpress_setup.sh /
-#COPY ./conf/wp-config.php /var/www/html/wp-config.php
-#COPY ./conf/www.conf /usr/local/etc/php-fpm.d/www.conf
+COPY ./conf/www.conf /etc/php82/php-fpm.d/www.conf
 
 RUN chmod +x /wordpress_setup.sh 
 	#&& chown -R www-data:www-data /var/www/wordpress \  ??
