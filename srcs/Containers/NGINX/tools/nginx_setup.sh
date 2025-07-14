@@ -26,6 +26,12 @@ if [ -f /run/secrets/ssl_config ]; then
     echo -e "${GREEN}SSL configuration loaded from secret${RESET}"
 fi
 
+# Set default values if not provided
+WEB_ROOT=${WEB_ROOT:-/var/www/html}
+SSL_PROTOCOLS=${SSL_PROTOCOLS:-"TLSv1.2 TLSv1.3"}
+SSL_CIPHERS=${SSL_CIPHERS:-"HIGH:!aNULL:!MD5"}
+HSTS_MAX_AGE=${HSTS_MAX_AGE:-31536000}
+
 # Use environment variables for SSL paths
 SSL_CERT_PATH=${SSL_CERT_PATH:-"/etc/nginx/ssl/${DOMAIN_NAME}.crt"}
 SSL_KEY_PATH=${SSL_KEY_PATH:-"/etc/nginx/ssl/${DOMAIN_NAME}.key"}
@@ -75,6 +81,10 @@ fi
 # Substitute environment variables in nginx configuration
 echo -e "${BLUE}Configuring NGINX with environment variables...${RESET}"
 envsubst '\$DOMAIN_NAME \$SSL_CERT_PATH \$SSL_KEY_PATH \$WEB_ROOT \$SSL_PROTOCOLS \$SSL_CIPHERS \$HSTS_MAX_AGE' < /etc/nginx/http.d/default.conf.template > /etc/nginx/http.d/default.conf
+
+# Verify the configuration was created correctly
+echo -e "${BLUE}Generated configuration:${RESET}"
+cat /etc/nginx/http.d/default.conf
 
 # Test nginx configuration
 echo -e "${BLUE}Testing NGINX configuration...${RESET}"
