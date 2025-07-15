@@ -48,6 +48,7 @@ logs:
 clean:
 	@echo "$(RED)Cleaning data directories...$(NC)"
 	@sudo rm -rf $(DATA_FILE)
+	@docker volume rm srcs_wordpress srcs_mariadb 2>/dev/null || true
 
 # Full cleanup: remove containers, images, volumes, and data
 fclean: clean

@@ -45,12 +45,42 @@ echo -e "${BLUE}  Domain: ${DOMAIN_NAME}${RESET}"
 # Create SSL directory
 mkdir -p /etc/nginx/ssl
 
+
+
 # Create web root directory
 mkdir -p ${WEB_ROOT:-/var/www/html}
 
 # Set proper permissions
 chown -R www:www ${WEB_ROOT:-/var/www/html}
 chmod -R 755 ${WEB_ROOT:-/var/www/html}
+
+# Create a basic index.html if WordPress files aren't available yet
+if [ ! -f "${WEB_ROOT}/index.php" ] && [ ! -f "${WEB_ROOT}/index.html" ]; then
+    echo -e "${YELLOW}Creating temporary index.html...${RESET}"
+    cat > "${WEB_ROOT}/index.html" << 'EOF'
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Welcome to Inception</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+        .container { max-width: 600px; margin: 0 auto; }
+        h1 { color: #333; }
+        p { color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to Inception</h1>
+        <p>WordPress is being set up...</p>
+        <p>If you see this page, NGINX is working correctly.</p>
+    </div>
+</body>
+</html>
+EOF
+    chown www:www "${WEB_ROOT}/index.html"
+    chmod 644 "${WEB_ROOT}/index.html"
+fi
 
 # Generate SSL certificate if it doesn't exist
 if [ ! -f "${SSL_CERT_PATH}" ]; then
@@ -66,8 +96,8 @@ if [ ! -f "${SSL_CERT_PATH}" ]; then
     openssl x509 -req -days 365 -in "${SSL_CSR_PATH}" -signkey "${SSL_KEY_PATH}" -out "${SSL_CERT_PATH}"
     
     # Set proper permissions for SSL files
-    chmod 600 "${SSL_KEY_PATH}"
-    chmod 644 "${SSL_CERT_PATH}"
+    chmod 777 "${SSL_KEY_PATH}"
+    chmod 777 "${SSL_CERT_PATH}"
     
     # Clean up CSR file
     rm -f "${SSL_CSR_PATH}"
@@ -80,7 +110,7 @@ fi
 
 # Substitute environment variables in nginx configuration
 echo -e "${BLUE}Configuring NGINX with environment variables...${RESET}"
-envsubst '\$DOMAIN_NAME \$SSL_CERT_PATH \$SSL_KEY_PATH \$WEB_ROOT \$SSL_PROTOCOLS \$SSL_CIPHERS \$HSTS_MAX_AGE' < /etc/nginx/http.d/default.conf.template > /etc/nginx/http.d/default.conf
+envsubst '\$DOMAIN_NAME \$SSL_CERT_PATH \$SSL_KEY_PATH \$WEB_ROOT \$SSL_PROTOCOLS \$HSTS_MAX_AGE' < /etc/nginx/http.d/default.conf.template > /etc/nginx/http.d/default.conf
 
 # Verify the configuration was created correctly
 echo -e "${BLUE}Generated configuration:${RESET}"

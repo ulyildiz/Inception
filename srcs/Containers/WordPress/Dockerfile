@@ -13,20 +13,23 @@ RUN	apk update && apk upgrade &&\
 
 RUN wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
     && chmod +x wp-cli.phar \
-    && mv wp-cli.phar /usr/local/bin/wp-cli.phar
+    && mv wp-cli.phar /usr/local/bin/wp-cli.phar \
+    && echo "memory_limit = 512M" >> /etc/php82/php.ini
 
 RUN ln -sf /usr/bin/php82 /usr/bin/php
 
 RUN adduser -D -g 'www' www && \
     mkdir -p /var/www/html && \
     chown -R www:www /var/www/html && \
-    chmod -R 755 /var/www/html
+    chmod -R 777 /var/www/html
 
 
 COPY ./tools/wordpress_setup.sh /
 COPY ./conf/www.conf /etc/php82/php-fpm.d/www.conf
+COPY ./conf/php.ini /etc/php82/conf.d/custom.ini
+
+WORKDIR /var/www/html
 
 RUN chmod +x /wordpress_setup.sh 
-	#&& chown -R www-data:www-data /var/www/wordpress \  ??
 	#&& chmod -R 755 /var/www/wordpress		??
 ENTRYPOINT ["sh", "/wordpress_setup.sh"]

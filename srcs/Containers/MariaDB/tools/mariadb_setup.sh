@@ -6,6 +6,13 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 
+if [ -f /run/secrets/mariadb ]; then
+	. /run/secrets/mariadb
+else
+	echo -e "${RED}MariaDB secret file not found! Exiting...${RESET}"
+	exit 1
+fi
+
 echo -e "${BLUE}[MariaDB setup]${RESET}"
 
 # initialize log directory
@@ -49,27 +56,39 @@ fi
 
 echo -e "${YELLOW}Configuring MariaDB users and privileges...${RESET}"
 
-mariadbd-safe & sleep 5
+# Start MariaDB temporarily for configuration
+mariadbd-safe & 
+sleep 10
 
-echo -e "${YELLOW}Altering root user's password...${RESET}"
-mariadb -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '${MARIADB_ROOT_PASSWORD}';"
+# Wait for MariaDB to be ready
+until mariadb -u root -e "SELECT 1;" 2>/dev/null; do
+    echo -e "${YELLOW}Waiting for MariaDB to start...${RESET}"
+    sleep 2
+done
 
-echo -e "${YELLOW}Creating user ${MARIADB_USER} if not exists...${RESET}"
-mariadb -u root -p"${MARIADB_ROOT_PASSWORD}" -e "CREATE USER IF NOT EXISTS '${MARIADB_USER}'@'%' IDENTIFIED BY '${MARIADB_USER_PASSWORD}';"
-
-echo -e "${YELLOW}Removing all privileges to ${MARIADB_USER} user...${RESET}"
-mariadb -u root -p"${MARIADB_ROOT_PASSWORD}" -e "REVOKE ALL PRIVILEGES, GRANT OPTION FROM '${MARIADB_USER}'@'%';"
-
-echo -e "${YELLOW}Creating ${MARIADB_DATABASE}...${RESET}"
-mariadb -u root -p"${MARIADB_ROOT_PASSWORD}" -e "CREATE DATABASE IF NOT EXISTS \`${MARIADB_DATABASE}\`;"
-
-echo -e "${YELLOW}Granting privileges to ${MARIADB_USER} user on ${MARIADB_DATABASE}...${RESET}"
-mariadb -u root -p"${MARIADB_ROOT_PASSWORD}" -e "GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, INDEX ON \`${MARIADB_DATABASE}\`.* TO '${MARIADB_USER}'@'%';"
-
-echo -e "${YELLOW} Apply privileges...${RESET}"
-mariadb -u root -p"${MARIADB_ROOT_PASSWORD}" -e "FLUSH PRIVILEGES;"
-
-echo -e "${GREEN}MariaDB users and privileges configured successfully.${RESET}"
+# Only configure users and database on first run
+if [ -d "/var/lib/mysql/mysql" ]; then
+    echo -e "${YELLOW}First run detected, configuring users and database...${RESET}"
+    
+    echo -e "${YELLOW}Altering root user's password...${RESET}"
+    mariadb -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '${MARIADB_ROOT_PASSWORD}';"
+    
+    echo -e "${YELLOW}Creating user ${MARIADB_USER} if not exists...${RESET}"
+    mariadb -u root -p"${MARIADB_ROOT_PASSWORD}" -e "CREATE USER IF NOT EXISTS '${MARIADB_USER}'@'%' IDENTIFIED BY '${MARIADB_USER_PASSWORD}';"
+    
+    echo -e "${YELLOW}Creating ${MARIADB_DATABASE}...${RESET}"
+    mariadb -u root -p"${MARIADB_ROOT_PASSWORD}" -e "CREATE DATABASE IF NOT EXISTS \`${MARIADB_DATABASE}\`;"
+    
+    echo -e "${YELLOW}Granting privileges to ${MARIADB_USER} user on ${MARIADB_DATABASE}...${RESET}"
+    mariadb -u root -p"${MARIADB_ROOT_PASSWORD}" -e "GRANT ALL PRIVILEGES ON \`${MARIADB_DATABASE}\`.* TO '${MARIADB_USER}'@'%';"
+    
+    echo -e "${YELLOW}Apply privileges...${RESET}"
+    mariadb -u root -p"${MARIADB_ROOT_PASSWORD}" -e "FLUSH PRIVILEGES;"
+    
+    echo -e "${GREEN}MariaDB users and privileges configured successfully.${RESET}"
+else
+    echo -e "${YELLOW}MariaDB already configured, skipping user setup...${RESET}"
+fi
 
 # Stop temporary MariaDB
 mariadb-admin -u root -p"${MARIADB_ROOT_PASSWORD}" shutdown

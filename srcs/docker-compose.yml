@@ -8,6 +8,10 @@ secrets:
     file: ../secrets/db_password.txt
   db_root_password:
     file: ../secrets/db_root_password.txt
+  wordpress:
+    file: ../secrets/wordpress.txt
+  mariadb:
+    file: ../secrets/mariadb.txt
   nginx_domain:
     file: ../secrets/nginx.txt
   ssl_config:
@@ -43,6 +47,7 @@ services:
     secrets:
       - db_password
       - db_root_password
+      - mariadb
 
   wordpress:
     container_name: wordpress
@@ -60,6 +65,8 @@ services:
     secrets:
       - db_password
       - db_root_password
+      - wordpress
+      - mariadb
     depends_on:
       - mariadb
   
