@@ -10,10 +10,9 @@ echo -e "${BLUE}Starting NGINX setup...${RESET}"
 
 # Read domain name from secret
 if [ -f /run/secrets/nginx_domain ]; then
-    DOMAIN_NAME=$(cat /run/secrets/nginx_domain)
-    echo -e "${GREEN}Domain name loaded from secret: ${DOMAIN_NAME}${RESET}"
+    . /run/secrets/nginx_domain
 else
-    echo -e "${YELLOW}Secret not found, using environment variable: ${DOMAIN_NAME}${RESET}"
+    echo -e "${YELLOW}Secret not found, using environment variable: ${RESET}"
 fi
 
 # Read SSL configuration from secret
@@ -54,33 +53,6 @@ mkdir -p ${WEB_ROOT:-/var/www/html}
 chown -R www:www ${WEB_ROOT:-/var/www/html}
 chmod -R 755 ${WEB_ROOT:-/var/www/html}
 
-# Create a basic index.html if WordPress files aren't available yet
-if [ ! -f "${WEB_ROOT}/index.php" ] && [ ! -f "${WEB_ROOT}/index.html" ]; then
-    echo -e "${YELLOW}Creating temporary index.html...${RESET}"
-    cat > "${WEB_ROOT}/index.html" << 'EOF'
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Welcome to Inception</title>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
-        .container { max-width: 600px; margin: 0 auto; }
-        h1 { color: #333; }
-        p { color: #666; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Welcome to Inception</h1>
-        <p>WordPress is being set up...</p>
-        <p>If you see this page, NGINX is working correctly.</p>
-    </div>
-</body>
-</html>
-EOF
-    chown www:www "${WEB_ROOT}/index.html"
-    chmod 644 "${WEB_ROOT}/index.html"
-fi
 
 # Generate SSL certificate if it doesn't exist
 if [ ! -f "${SSL_CERT_PATH}" ]; then

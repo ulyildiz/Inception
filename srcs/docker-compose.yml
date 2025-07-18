@@ -37,6 +37,7 @@ services:
   mariadb:
     container_name: mariadb
     build: ./Containers/MariaDB
+    image: srcs_mariadb:
     restart: on-failure
     env_file:
       - ./Containers/MariaDB/.env
