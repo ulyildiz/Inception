@@ -9,9 +9,8 @@ COMPOSE_CMD = docker-compose -f $(COMPOSE_FILE)
 GREEN = \033[0;32m
 RED = \033[0;31m
 YELLOW = \033[1;33m
-NC = \033[0m # No Color
+NC = \033[0m
 
-# Default target
 all: up
 
 # Create data directories
@@ -44,16 +43,16 @@ status:
 logs:
 	@$(COMPOSE_CMD) logs -f
 
-# Clean data directories
-clean:
-	@echo "$(RED)Cleaning data directories...$(NC)"
-	@sudo rm -rf $(DATA_FILE)
-	@docker volume rm srcs_wordpress srcs_mariadb 2>/dev/null || true
+# Clean non-persistent data
+clean: stop
+	@echo "$(RED)Cleaning up...$(NC)"
+	@docker system prune -f
 
-# Full cleanup: remove containers, images, volumes, and data
-fclean: clean
+# Full cleanup
+fclean:
 	@echo "$(RED)Performing full cleanup...$(NC)"
 	@$(COMPOSE_CMD) down --remove-orphans --volumes --rmi all 2>/dev/null || true
+	@sudo rm -rf $(DATA_FILE)
 	@docker system prune -a --volumes -f
 	@docker volume rm $$(docker volume ls -q | grep -E "(mariadb|wordpress)") 2>/dev/null || true
 	@docker network rm inception 2>/dev/null || true
@@ -95,7 +94,7 @@ help:
 	@echo "  stop         - Stop and remove containers"
 	@echo "  status       - Show container status"
 	@echo "  logs         - Show logs (follow mode)"
-	@echo "  clean        - Remove data directories"
+	@echo "  clean        - Stop and remove containers and clean non-persistent data"
 	@echo "  fclean       - Full cleanup (containers, images, volumes, data)"
 	@echo "  re           - Restart everything (fclean + all)"
 	@echo "  shell-*      - Enter container shell (mariadb, wordpress, nginx)"

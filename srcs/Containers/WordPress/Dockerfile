@@ -1,4 +1,4 @@
-FROM alpine:latest
+FROM alpine:3.22.1
 
 RUN	apk update && apk upgrade &&\
 	apk add php82 php82-fpm php82-bcmath php82-bz2 php82-calendar php82-cli php82-ctype \
