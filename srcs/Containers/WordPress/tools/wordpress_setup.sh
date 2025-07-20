@@ -8,7 +8,7 @@ YELLOW='\033[0;33m'
 #chown -R www-data: /var/www/*
 
 if [ -f /run/secrets/db_password ]; then
-	MARIADB_USER_PASSWORD=$(cat /run/secrets/db_password)
+	. /run/secrets/db_password
 else
 	echo -e "${RED}Database password secret not found! Exiting...${RESET}"
 	exit 1

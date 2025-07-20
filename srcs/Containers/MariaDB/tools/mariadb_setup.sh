@@ -40,7 +40,7 @@ chown -R mysql:mysql /var/lib/mysql
 
 if [ -f /run/secrets/db_password ]; then
   echo -e "${YELLOW}Using db_password from Docker secrets...${RESET}"
-  MARIADB_USER_PASSWORD=$(cat /run/secrets/db_password)
+  . /run/secrets/db_password
 else
 	echo -e "${RED}Error: db_password secret not found!${RESET}"
 	exit 1
@@ -48,7 +48,7 @@ fi
 
 if [ -f /run/secrets/db_root_password ]; then
   echo -e "${YELLOW}Using db_root_password from Docker secrets...${RESET}"
-  MARIADB_ROOT_PASSWORD=$(cat /run/secrets/db_root_password)
+  . /run/secrets/db_root_password
 else
 	echo -e "${RED}Error: db_root_password secret not found!${RESET}"
 	exit 1

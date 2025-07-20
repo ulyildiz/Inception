@@ -37,7 +37,7 @@ services:
   mariadb:
     container_name: mariadb
     build: ./Containers/MariaDB
-    image: srcs_mariadb:
+    image: srcs_mariadb:notlatest
     restart: on-failure
     env_file:
       - ./Containers/MariaDB/.env
@@ -55,6 +55,7 @@ services:
   wordpress:
     container_name: wordpress
     build: ./Containers/WordPress
+    image: srcs_wordpress:notlatest
     restart: on-failure
     env_file:
       - ./Containers/WordPress/.env
@@ -76,6 +77,7 @@ services:
   nginx:
     container_name: nginx
     build: ./Containers/NGINX
+    image: srcs_nginx:notlatest
     restart: on-failure
     env_file:
       - ./Containers/NGINX/.env

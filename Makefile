@@ -1,7 +1,8 @@
 # Variables
 SRCS_FILE = ./srcs
 VOLUME_FILE = /var/lib/docker/volumes
-DATA_FILE = ${HOME}/data
+LOGIN = ulyildiz
+DATA_FILE = ${HOME}/${LOGIN}/data
 COMPOSE_FILE = $(SRCS_FILE)/docker-compose.yml
 COMPOSE_CMD = docker-compose -f $(COMPOSE_FILE)
 

@@ -28,12 +28,10 @@ fi
 # Set default values if not provided
 WEB_ROOT=${WEB_ROOT:-/var/www/html}
 SSL_PROTOCOLS=${SSL_PROTOCOLS:-"TLSv1.2 TLSv1.3"}
-SSL_CIPHERS=${SSL_CIPHERS:-"HIGH:!aNULL:!MD5"}
-HSTS_MAX_AGE=${HSTS_MAX_AGE:-31536000}
+SSL_CIPHERS=${SSL_CIPHERS}
+HSTS_MAX_AGE=${HSTS_MAX_AGE}
 
 # Use environment variables for SSL paths
-SSL_CERT_PATH=${SSL_CERT_PATH:-"/etc/nginx/ssl/${DOMAIN_NAME}.crt"}
-SSL_KEY_PATH=${SSL_KEY_PATH:-"/etc/nginx/ssl/${DOMAIN_NAME}.key"}
 SSL_CSR_PATH="/etc/nginx/ssl/${DOMAIN_NAME}.csr"
 
 echo -e "${BLUE}SSL Configuration:${RESET}"
