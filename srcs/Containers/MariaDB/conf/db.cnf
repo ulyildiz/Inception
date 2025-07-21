@@ -12,8 +12,4 @@ collation-server = utf8mb4_unicode_ci
 log_error = /var/log/mysql/error.log
 lc-messages = en_US
 
-wait-timeout = 28800
-
-sql_mode=NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES
-
 skip-host-cache

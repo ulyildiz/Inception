@@ -31,5 +31,5 @@ COPY ./conf/php.ini /etc/php82/conf.d/custom.ini
 WORKDIR /var/www/html
 
 RUN chmod +x /wordpress_setup.sh 
-	#&& chmod -R 755 /var/www/wordpress		??
+
 ENTRYPOINT ["sh", "/wordpress_setup.sh"]

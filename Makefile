@@ -1,6 +1,5 @@
 # Variables
 SRCS_FILE = ./srcs
-VOLUME_FILE = /var/lib/docker/volumes
 LOGIN = ulyildiz
 DATA_FILE = ${HOME}/${LOGIN}/data
 COMPOSE_FILE = $(SRCS_FILE)/docker-compose.yml
@@ -63,13 +62,13 @@ re: fclean all
 
 # Enter a container shell
 shell-mariadb:
-	@docker exec -it mariadb /bin/bash
+	@docker exec -it mariadb /bin/sh
 
 shell-wordpress:
-	@docker exec -it wordpress /bin/bash
+	@docker exec -it wordpress /bin/sh
 
 shell-nginx:
-	@docker exec -it nginx /bin/bash
+	@docker exec -it nginx /bin/sh
 
 # Development helpers
 dev-logs-mariadb:

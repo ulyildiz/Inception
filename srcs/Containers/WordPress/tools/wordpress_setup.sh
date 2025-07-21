@@ -7,24 +7,12 @@ YELLOW='\033[0;33m'
 
 #chown -R www-data: /var/www/*
 
-if [ -f /run/secrets/db_password ]; then
+if [ -f /run/secrets/db_password ] || [ -f /run/secrets/mariadb ] || [ -f /run/secrets/wordpress ]; then
 	. /run/secrets/db_password
-else
-	echo -e "${RED}Database password secret not found! Exiting...${RESET}"
-	exit 1
-fi
-
-if [ -f /run/secrets/mariadb ]; then
 	. /run/secrets/mariadb
-else
-	echo -e "${RED}MariaDB secret file not found! Exiting...${RESET}"
-	exit 1
-fi
-
-if [ -f /run/secrets/wordpress ]; then
 	. /run/secrets/wordpress
 else
-	echo -e "${RED}WordPress secrets file not found! Exiting...${RESET}"
+	echo -e "${RED}Database password secret not found! Exiting...${RESET}"
 	exit 1
 fi
 
@@ -34,7 +22,6 @@ do
     sleep 3
 done
 echo "[WP config] MariaDB accessible."
-# wait mariadb
 
 if [ -f "${WP_PATH}/wp-config.php" ]; then
 	echo -e "${YELLOW}WordPress is already installed.${RESET}"

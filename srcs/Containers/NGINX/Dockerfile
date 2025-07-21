@@ -13,10 +13,7 @@ RUN		adduser -D -g 'www' www && \
 		chown -R www:www /www && \
 		chown -R www:www /var/www/html
 
-RUN		mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf.orig
-
 COPY	./tools/nginx_setup.sh /
-COPY	./conf/nginx.conf /etc/nginx/nginx.conf
 COPY	./conf/default.conf.template /etc/nginx/http.d/default.conf.template
 
 RUN 	chmod +x /nginx_setup.sh

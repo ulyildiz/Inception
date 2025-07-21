@@ -26,10 +26,9 @@ if [ -f /run/secrets/ssl_config ]; then
 fi
 
 # Set default values if not provided
-WEB_ROOT=${WEB_ROOT:-/var/www/html}
-SSL_PROTOCOLS=${SSL_PROTOCOLS:-"TLSv1.2 TLSv1.3"}
+WEB_ROOT=${WEB_ROOT}
+SSL_PROTOCOLS=${SSL_PROTOCOLS}
 SSL_CIPHERS=${SSL_CIPHERS}
-HSTS_MAX_AGE=${HSTS_MAX_AGE}
 
 # Use environment variables for SSL paths
 SSL_CSR_PATH="/etc/nginx/ssl/${DOMAIN_NAME}.csr"
@@ -42,14 +41,12 @@ echo -e "${BLUE}  Domain: ${DOMAIN_NAME}${RESET}"
 # Create SSL directory
 mkdir -p /etc/nginx/ssl
 
-
-
 # Create web root directory
-mkdir -p ${WEB_ROOT:-/var/www/html}
+mkdir -p ${WEB_ROOT}
 
 # Set proper permissions
-chown -R www:www ${WEB_ROOT:-/var/www/html}
-chmod -R 755 ${WEB_ROOT:-/var/www/html}
+chown -R www:www ${WEB_ROOT}
+chmod -R 755 ${WEB_ROOT}
 
 
 # Generate SSL certificate if it doesn't exist
@@ -77,10 +74,9 @@ else
     echo -e "${GREEN}SSL certificate already exists.${RESET}"
 fi
 
-
 # Substitute environment variables in nginx configuration
 echo -e "${BLUE}Configuring NGINX with environment variables...${RESET}"
-envsubst '\$DOMAIN_NAME \$SSL_CERT_PATH \$SSL_KEY_PATH \$WEB_ROOT \$SSL_PROTOCOLS \$HSTS_MAX_AGE' < /etc/nginx/http.d/default.conf.template > /etc/nginx/http.d/default.conf
+envsubst '\$DOMAIN_NAME \$SSL_CERT_PATH \$SSL_KEY_PATH \$WEB_ROOT \$SSL_PROTOCOLS' < /etc/nginx/http.d/default.conf.template > /etc/nginx/http.d/default.conf
 
 # Verify the configuration was created correctly
 echo -e "${BLUE}Generated configuration:${RESET}"

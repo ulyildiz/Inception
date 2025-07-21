@@ -1,7 +1,10 @@
 FROM alpine:3.22.1
 
 RUN apk update && apk upgrade && \
-	apk add --no-cache mariadb mariadb-client
+	apk add --no-cache mariadb mariadb-client && \
+	mkdir -p /var/log/mysql /run/mysqld && \
+	chown -R mysql:mysql /var/log/mysql /run/mysqld /var/lib/mysql && \
+	chmod 755 /run/mysqld
 
 COPY ./tools/mariadb_setup.sh /
 COPY ./conf/db.cnf /etc/my.cnf.d/mariadb-server.cnf
