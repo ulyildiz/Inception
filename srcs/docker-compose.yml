@@ -1,5 +1,3 @@
-version : '3.8'
-
 networks:
   inception:
     name: "inception"
@@ -86,7 +84,6 @@ services:
     networks:
       - inception
     expose:
-      - 443
       - 9000
     ports:
       - 443:443

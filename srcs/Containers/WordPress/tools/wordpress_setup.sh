@@ -16,8 +16,8 @@ else
 	exit 1
 fi
 
-while ! mariadb -h${DB_HOST} -u${MARIADB_USER} -p${MARIADB_USER_PASSWORD} ${MARIADB_DATABASE};
-do
+
+for (i = 0; i < 100 &&  mariadb -h${DB_HOST} -u${MARIADB_USER} -p${MARIADB_USER_PASSWORD} ${MARIADB_DATABASE}; i++); do
 	echo -e "${YELLOW}Waiting for MariaDB to be available...${RESET}"
     sleep 3
 done
