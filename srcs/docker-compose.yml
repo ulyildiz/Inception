@@ -53,8 +53,6 @@ services:
     build: ./Containers/WordPress
     image: srcs_wordpress:notlatest
     restart: on-failure
-    env_file:
-      - ./Containers/WordPress/.env
     volumes:
       - wordpress:/var/www/html
     networks:

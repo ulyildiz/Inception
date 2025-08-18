@@ -5,8 +5,6 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 
-#chown -R www-data: /var/www/*
-
 if [ -f /run/secrets/db_password ] && [ -f /run/secrets/mariadb ] && [ -f /run/secrets/wordpress ]; then
 	. /run/secrets/db_password
 	. /run/secrets/mariadb
@@ -15,7 +13,6 @@ else
 	echo -e "${RED}Required secrets missing (db_password, mariadb, wordpress). Exiting...${RESET}"
 	exit 1
 fi
-
 
 for i in $(seq 1 100); do
 	if mariadb -h"${DB_HOST}" -u"${MARIADB_USER}" -p"${MARIADB_USER_PASSWORD}" "${MARIADB_DATABASE}" -e "SELECT 1" >/dev/null 2>&1; then

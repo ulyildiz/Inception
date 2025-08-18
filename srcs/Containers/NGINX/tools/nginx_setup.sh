@@ -8,37 +8,28 @@ YELLOW='\033[0;33m'
 
 echo -e "${BLUE}Starting NGINX setup...${RESET}"
 
-## Domain can come from secret or env
+set -a
+# Read domain name from secret
 if [ -f /run/secrets/nginx_domain ]; then
     . /run/secrets/nginx_domain
 else
-    echo -e "${YELLOW}nginx_domain secret not found, falling back to environment...${RESET}"
+    echo -e "${YELLOW}Secret not found, using environment variable: ${RESET}"
 fi
+set +a
 
 # Read SSL configuration from secret
 if [ -f /run/secrets/ssl_config ]; then
-    SSL_CONFIG=$(cat /run/secrets/ssl_config)
-    SSL_COUNTRY=$(echo "$SSL_CONFIG" | sed -n '1p')
-    SSL_STATE=$(echo "$SSL_CONFIG" | sed -n '2p')
-    SSL_CITY=$(echo "$SSL_CONFIG" | sed -n '3p')
-    SSL_ORG=$(echo "$SSL_CONFIG" | sed -n '4p')
+    . /run/secrets/ssl_config
     echo -e "${GREEN}SSL configuration loaded from secret${RESET}"
 fi
 
-## Defaults
-DOMAIN_NAME=${DOMAIN_NAME:-localhost}
-WEB_ROOT=${WEB_ROOT:-/var/www/html}
-SSL_PROTOCOLS=${SSL_PROTOCOLS:-"TLSv1.2 TLSv1.3"}
-
-# Derive SSL paths from domain
-SSL_CERT_PATH=${SSL_CERT_PATH:-/etc/nginx/ssl/${DOMAIN_NAME}.crt}
-SSL_KEY_PATH=${SSL_KEY_PATH:-/etc/nginx/ssl/${DOMAIN_NAME}.key}
+# Use environment variables for SSL paths
 SSL_CSR_PATH="/etc/nginx/ssl/${DOMAIN_NAME}.csr"
 
-echo -e "${BLUE}SSL Configuration:${RESET}"
-echo -e "${BLUE}  Certificate: ${SSL_CERT_PATH}${RESET}"
-echo -e "${BLUE}  Key: ${SSL_KEY_PATH}${RESET}"
-echo -e "${BLUE}  Domain: ${DOMAIN_NAME}${RESET}"
+echo -e "${BLUE}SSL Configuration:"
+echo -e "Certificate: ${SSL_CERT_PATH}"
+echo -e "Key: ${SSL_KEY_PATH}"
+echo -e "Domain: ${DOMAIN_NAME}${RESET}"
 
 # Create SSL directory
 mkdir -p /etc/nginx/ssl
@@ -49,7 +40,6 @@ mkdir -p ${WEB_ROOT}
 # Set proper permissions
 chown -R www:www ${WEB_ROOT}
 chmod -R 755 ${WEB_ROOT}
-
 
 # Generate SSL certificate if it doesn't exist
 if [ ! -f "${SSL_CERT_PATH}" ]; then
@@ -78,7 +68,9 @@ fi
 
 # Substitute environment variables in nginx configuration
 echo -e "${BLUE}Configuring NGINX with environment variables...${RESET}"
-envsubst '\$DOMAIN_NAME \$SSL_CERT_PATH \$SSL_KEY_PATH \$WEB_ROOT \$SSL_PROTOCOLS' < /etc/nginx/http.d/default.conf.template > /etc/nginx/http.d/default.conf
+envsubst '${DOMAIN_NAME} ${SSL_CERT_PATH} ${SSL_KEY_PATH} ${WEB_ROOT} ${SSL_PROTOCOLS}' \
+  < /etc/nginx/http.d/default.conf.template \
+  > /etc/nginx/http.d/default.conf
 
 # Verify the configuration was created correctly
 echo -e "${BLUE}Generated configuration:${RESET}"

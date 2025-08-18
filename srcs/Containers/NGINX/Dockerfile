@@ -18,7 +18,5 @@ COPY	./conf/default.conf.template /etc/nginx/http.d/default.conf.template
 
 RUN 	chmod +x /nginx_setup.sh
 
-EXPOSE	443
-
 ENTRYPOINT ["sh", "/nginx_setup.sh"]
 CMD ["nginx", "-g", "daemon off;"]
