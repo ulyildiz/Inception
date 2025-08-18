@@ -6,13 +6,13 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 
-if [ -f /run/secrets/mariadb ] || [ -f /run/secrets/db_password ] || [ -f /run/secrets/db_root_password ]; then
-	. /run/secrets/mariadb
+if [ -f /run/secrets/mariadb ] && [ -f /run/secrets/db_password ] && [ -f /run/secrets/db_root_password ]; then
+  . /run/secrets/mariadb
   . /run/secrets/db_password
   . /run/secrets/db_root_password
 else
-	echo -e "${RED}MariaDB secret file not found! Exiting...${RESET}"
-	exit 1
+  echo -e "${RED}Required secrets missing (mariadb, db_password, db_root_password). Exiting...${RESET}"
+  exit 1
 fi
 
 echo -e "${BLUE}[MariaDB setup]${RESET}"
@@ -32,7 +32,6 @@ echo -e "${YELLOW}Configuring MariaDB users and privileges...${RESET}"
 mariadbd --skip-networking &
 sleep 10
 
-echo -e "${MARIADB_ROOT_PASSWORD}"
 # Only configure users and database on first run
 if [ ! -f "/var/lib/mysql/.srcs_mariadb" ]; then
     echo -e "${YELLOW}First run detected, configuring users and database...${RESET}"

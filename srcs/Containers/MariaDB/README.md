@@ -104,3 +104,29 @@ The `mariadb` service in `docker-compose.yml` ties everything together:
 -   `volumes: - mariadb:/var/lib/mysql`: Attaches the persistent storage volume.
 -   `networks: - inception`: Connects the container to the shared network.
 -   `secrets`: Lists all the secrets that need to be made available to the container.
+
+---
+
+## Quick Start & Commands Cheat Sheet
+
+- Compose build & up (PowerShell):
+  ```powershell
+  docker compose -f srcs/docker-compose.yml up -d --build
+  ```
+- Enter shell:
+  ```powershell
+  docker exec -it mariadb /bin/sh
+  ```
+- MySQL/MariaDB basics inside the container:
+  - `mariadb -u root -p` — open SQL shell
+  - `SHOW DATABASES;` — list DBs
+  - `USE <db>;` — select DB
+  - `SHOW TABLES;` — list tables
+  - `SELECT USER, HOST FROM mysql.user;` — check users
+
+Keywords & commands used by the setup:
+- `mariadb-install-db` — initialize system tables in a new datadir
+- `mariadbd --skip-networking` — start server without listening on TCP
+- `ALTER USER`, `CREATE USER`, `CREATE DATABASE`, `GRANT` — privilege management
+- `mariadb-admin shutdown` — graceful stop
+- `mysqld`/`mariadbd-safe` — main server process

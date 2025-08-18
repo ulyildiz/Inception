@@ -8,11 +8,11 @@ YELLOW='\033[0;33m'
 
 echo -e "${BLUE}Starting NGINX setup...${RESET}"
 
-# Read domain name from secret
+## Domain can come from secret or env
 if [ -f /run/secrets/nginx_domain ]; then
     . /run/secrets/nginx_domain
 else
-    echo -e "${YELLOW}Secret not found, using environment variable: ${RESET}"
+    echo -e "${YELLOW}nginx_domain secret not found, falling back to environment...${RESET}"
 fi
 
 # Read SSL configuration from secret
@@ -25,12 +25,14 @@ if [ -f /run/secrets/ssl_config ]; then
     echo -e "${GREEN}SSL configuration loaded from secret${RESET}"
 fi
 
-# Set default values if not provided
-WEB_ROOT=${WEB_ROOT}
-SSL_PROTOCOLS=${SSL_PROTOCOLS}
-SSL_CIPHERS=${SSL_CIPHERS}
+## Defaults
+DOMAIN_NAME=${DOMAIN_NAME:-localhost}
+WEB_ROOT=${WEB_ROOT:-/var/www/html}
+SSL_PROTOCOLS=${SSL_PROTOCOLS:-"TLSv1.2 TLSv1.3"}
 
-# Use environment variables for SSL paths
+# Derive SSL paths from domain
+SSL_CERT_PATH=${SSL_CERT_PATH:-/etc/nginx/ssl/${DOMAIN_NAME}.crt}
+SSL_KEY_PATH=${SSL_KEY_PATH:-/etc/nginx/ssl/${DOMAIN_NAME}.key}
 SSL_CSR_PATH="/etc/nginx/ssl/${DOMAIN_NAME}.csr"
 
 echo -e "${BLUE}SSL Configuration:${RESET}"

@@ -7,19 +7,22 @@ YELLOW='\033[0;33m'
 
 #chown -R www-data: /var/www/*
 
-if [ -f /run/secrets/db_password ] || [ -f /run/secrets/mariadb ] || [ -f /run/secrets/wordpress ]; then
+if [ -f /run/secrets/db_password ] && [ -f /run/secrets/mariadb ] && [ -f /run/secrets/wordpress ]; then
 	. /run/secrets/db_password
 	. /run/secrets/mariadb
 	. /run/secrets/wordpress
 else
-	echo -e "${RED}Database password secret not found! Exiting...${RESET}"
+	echo -e "${RED}Required secrets missing (db_password, mariadb, wordpress). Exiting...${RESET}"
 	exit 1
 fi
 
 
-for (i = 0; i < 100 &&  mariadb -h${DB_HOST} -u${MARIADB_USER} -p${MARIADB_USER_PASSWORD} ${MARIADB_DATABASE}; i++); do
+for i in $(seq 1 100); do
+	if mariadb -h"${DB_HOST}" -u"${MARIADB_USER}" -p"${MARIADB_USER_PASSWORD}" "${MARIADB_DATABASE}" -e "SELECT 1" >/dev/null 2>&1; then
+		break
+	fi
 	echo -e "${YELLOW}Waiting for MariaDB to be available...${RESET}"
-    sleep 3
+	sleep 3
 done
 echo "[WP config] MariaDB accessible."
 

@@ -37,8 +37,6 @@ services:
     build: ./Containers/MariaDB
     image: srcs_mariadb:notlatest
     restart: on-failure
-    env_file:
-      - ./Containers/MariaDB/.env
     volumes:
       - mariadb:/var/lib/mysql
     networks:
@@ -63,10 +61,8 @@ services:
       - inception
     expose:
       - 9000
-      - 3306
     secrets:
       - db_password
-      - db_root_password
       - wordpress
       - mariadb
     depends_on:
@@ -77,14 +73,10 @@ services:
     build: ./Containers/NGINX
     image: srcs_nginx:notlatest
     restart: on-failure
-    env_file:
-      - ./Containers/NGINX/.env
     volumes:
       - wordpress:/var/www/html
     networks:
       - inception
-    expose:
-      - 9000
     ports:
       - 443:443
     secrets:
