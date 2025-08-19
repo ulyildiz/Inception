@@ -30,9 +30,7 @@ else
 	
 	# Set PHP memory limit for wp-cli
 	export PHP_MEMORY_LIMIT=512M
-	
-	wp-cli.phar cli update --yes --allow-root
-	
+
 	echo -e "${YELLOW}Downloading WordPress...${RESET}"
 	mkdir -p "${WP_PATH}"
 	
@@ -65,6 +63,7 @@ else
 		--admin_user=${WP_ADMIN} \
 		--admin_password=${WP_ADMIN_PASSWORD} \
 		--admin_email=${WP_ADMIN_EMAIL} \
+		--skip-email \
 		--path="${WP_PATH}" \
 		--allow-root; then
 		echo -e "${RED}Failed to install WordPress. Exiting...${RESET}"
