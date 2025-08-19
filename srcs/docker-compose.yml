@@ -12,8 +12,6 @@ secrets:
     file: ../secrets/wordpress.txt
   mariadb:
     file: ../secrets/mariadb.txt
-  nginx_domain:
-    file: ../secrets/nginx.txt
   ssl_config:
     file: ../secrets/ssl_config.txt
 
@@ -59,6 +57,8 @@ services:
       - inception
     expose:
       - 9000
+    env_file:
+      - ./Containers/WordPress/.env
     secrets:
       - db_password
       - wordpress
@@ -77,8 +77,9 @@ services:
       - inception
     ports:
       - 443:443
+    env_file:
+      - ./Containers/NGINX/.env
     secrets:
-      - nginx_domain
       - ssl_config
     depends_on:
       - mariadb

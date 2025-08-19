@@ -14,6 +14,8 @@ else
 	exit 1
 fi
 
+DB_HOST=mariadb
+
 for i in $(seq 1 100); do
 	if mariadb -h"${DB_HOST}" -u"${MARIADB_USER}" -p"${MARIADB_USER_PASSWORD}" "${MARIADB_DATABASE}" -e "SELECT 1" >/dev/null 2>&1; then
 		break
@@ -28,24 +30,30 @@ if [ -f "${WP_PATH}/wp-config.php" ]; then
 else
 	echo -e "${YELLOW}Setup WordPress...${RESET}"
 	
-	# Set PHP memory limit for wp-cli
-	export PHP_MEMORY_LIMIT=512M
+	WP_PATH="/var/www/html"
 
 	echo -e "${YELLOW}Downloading WordPress...${RESET}"
-	mkdir -p "${WP_PATH}"
-	
-	# Download WordPress with retry logic
-	echo -e "${YELLOW}Download attempt $i/3...${RESET}"
-	wp-cli.phar core download --path="${WP_PATH}" --allow-root;
-	echo -e "${GREEN}WordPress downloaded successfully!${RESET}"
-	
-	# Verify WordPress was downloaded
-	if [ ! -f "${WP_PATH}/wp-config-sample.php" ]; then
-		echo -e "${RED}WordPress download verification failed. Exiting...${RESET}"
-		exit 1
+	if wp-cli.phar core is-installed --path="${WP_PATH}" --allow-root; then
+		echo -e "${GREEN}WordPress is already installed.${RESET}"
+	else
+		attempts=0
+		max_attempts=3
+		while [ $attempts -lt $max_attempts ]; do
+			if wp-cli.phar core download --path="${WP_PATH}" --allow-root; then
+				echo -e "${GREEN}WordPress downloaded successfully!${RESET}"
+				break
+			else
+				echo -e "${RED}Failed to download WordPress. Retrying...${RESET}"
+				attempts=$((attempts + 1))
+				sleep 3
+			fi
+		done
+		if [ $attempts -eq $max_attempts ]; then
+			echo -e "${RED}Failed to download WordPress after ${max_attempts} attempts. Exiting...${RESET}"
+			exit 1
+		fi
 	fi
-	
-	echo -e "${YELLOW}Configuring WordPress...${RESET}"
+
 	echo -e "${YELLOW}Creating wp-config.php...${RESET}"
 	if ! wp-cli.phar config create --dbname=${MARIADB_DATABASE} \
 		--dbuser=${MARIADB_USER} \
@@ -79,7 +87,6 @@ else
 		echo -e "${RED}Failed to create WordPress user. Continuing...${RESET}"
 	fi
 
-    # Set proper permissions
     chown -R www:www "${WP_PATH}"
     chmod -R 755 "${WP_PATH}"
     
