@@ -4,16 +4,10 @@ networks:
     driver: bridge
 
 secrets:
-  db_password:
-    file: ../secrets/db_password.txt
-  db_root_password:
-    file: ../secrets/db_root_password.txt
   wordpress:
     file: ../secrets/wordpress.txt
   mariadb:
     file: ../secrets/mariadb.txt
-  ssl_config:
-    file: ../secrets/ssl_config.txt
 
 volumes:
   mariadb:
@@ -42,8 +36,6 @@ services:
     expose:
       - 3306
     secrets:
-      - db_password
-      - db_root_password
       - mariadb
 
   wordpress:
@@ -60,7 +52,6 @@ services:
     env_file:
       - ./Containers/WordPress/.env
     secrets:
-      - db_password
       - wordpress
       - mariadb
     depends_on:
@@ -79,8 +70,6 @@ services:
       - 443:443
     env_file:
       - ./Containers/NGINX/.env
-    secrets:
-      - ssl_config
     depends_on:
       - mariadb
       - wordpress

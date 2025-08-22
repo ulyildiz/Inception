@@ -5,12 +5,11 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 
-if [ -f /run/secrets/db_password ] && [ -f /run/secrets/mariadb ] && [ -f /run/secrets/wordpress ]; then
-	. /run/secrets/db_password
+if [ -f /run/secrets/mariadb ] && [ -f /run/secrets/wordpress ]; then
 	. /run/secrets/mariadb
 	. /run/secrets/wordpress
 else
-	echo -e "${RED}Required secrets missing (db_password, mariadb, wordpress). Exiting...${RESET}"
+	echo -e "${RED}Required secrets missing (mariadb, wordpress). Exiting...${RESET}"
 	exit 1
 fi
 
@@ -25,12 +24,12 @@ for i in $(seq 1 100); do
 done
 echo "[WP config] MariaDB accessible."
 
+WP_PATH="/var/www/html"
+
 if [ -f "${WP_PATH}/wp-config.php" ]; then
 	echo -e "${YELLOW}WordPress is already installed.${RESET}"
 else
 	echo -e "${YELLOW}Setup WordPress...${RESET}"
-	
-	WP_PATH="/var/www/html"
 
 	echo -e "${YELLOW}Downloading WordPress...${RESET}"
 	if wp-cli.phar core is-installed --path="${WP_PATH}" --allow-root; then

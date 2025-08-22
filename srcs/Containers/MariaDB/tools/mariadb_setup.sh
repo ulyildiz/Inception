@@ -6,12 +6,10 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 
-if [ -f /run/secrets/mariadb ] && [ -f /run/secrets/db_password ] && [ -f /run/secrets/db_root_password ]; then
+if [ -f /run/secrets/mariadb ]; then
   . /run/secrets/mariadb
-  . /run/secrets/db_password
-  . /run/secrets/db_root_password
 else
-  echo -e "${RED}Required secrets missing (mariadb, db_password, db_root_password). Exiting...${RESET}"
+  echo -e "${RED}Required secrets missing (mariadb). Exiting...${RESET}"
   exit 1
 fi
 

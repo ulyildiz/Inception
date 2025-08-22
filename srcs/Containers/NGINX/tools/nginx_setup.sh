@@ -8,11 +8,6 @@ YELLOW='\033[0;33m'
 
 echo -e "${BLUE}Starting NGINX setup...${RESET}"
 
-if [ -f /run/secrets/ssl_config ]; then
-    . /run/secrets/ssl_config
-    echo -e "${GREEN}SSL configuration loaded from secret${RESET}"
-fi
-
 # Use environment variables
 set -a
 SSL_CERT_PATH="/etc/nginx/ssl/${DOMAIN_NAME}.crt"
@@ -21,6 +16,7 @@ SSL_PROTOCOLS="TLSv1.2 TLSv1.3"
 WEB_ROOT="/var/www/html"
 SSL_CSR_PATH="/etc/nginx/ssl/${DOMAIN_NAME}.csr"
 set +a
+
 mkdir -p /etc/nginx/ssl
 mkdir -p ${WEB_ROOT}
 
@@ -34,7 +30,7 @@ if [ ! -f "${SSL_CERT_PATH}" ]; then
     openssl genrsa -out "${SSL_KEY_PATH}" 2048
     
     # Generate certificate signing request
-    openssl req -new -key "${SSL_KEY_PATH}" -out "${SSL_CSR_PATH}" -subj "/C=${SSL_COUNTRY}/ST=${SSL_STATE}/L=${SSL_CITY}/O=${SSL_ORG}/CN=${DOMAIN_NAME}"
+    openssl req -new -key "${SSL_KEY_PATH}" -out "${SSL_CSR_PATH}" -subj "/C=TR/ST=KOCAELI/L=GEBZE/O=42KOCAELI/CN=${DOMAIN_NAME}"
     
     # Generate self-signed certificate
     openssl x509 -req -days 365 -in "${SSL_CSR_PATH}" -signkey "${SSL_KEY_PATH}" -out "${SSL_CERT_PATH}"
