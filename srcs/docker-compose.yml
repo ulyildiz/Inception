@@ -50,7 +50,7 @@ services:
     expose:
       - 9000
     env_file:
-      - ./Containers/WordPress/.env
+      - ./Containers/.env
     secrets:
       - wordpress
       - mariadb
@@ -69,7 +69,7 @@ services:
     ports:
       - 443:443
     env_file:
-      - ./Containers/NGINX/.env
+      - ./Containers.env
     depends_on:
       - mariadb
       - wordpress

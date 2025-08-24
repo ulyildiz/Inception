@@ -15,7 +15,6 @@ fi
 
 echo -e "${BLUE}[MariaDB setup]${RESET}"
 
-# Initialize the database only if not already initialized
 if [ ! -d "/var/lib/mysql/mysql" ]; then
   echo -e "${YELLOW}Initializing MariaDB data directory...${RESET}"
   mariadb-install-db --basedir=/usr --datadir=/var/lib/mysql --skip-test-db 
