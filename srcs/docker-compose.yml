@@ -69,7 +69,7 @@ services:
     ports:
       - 443:443
     env_file:
-      - ./Containers.env
+      - ./Containers/.env
     depends_on:
       - mariadb
       - wordpress

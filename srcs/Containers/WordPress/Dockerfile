@@ -21,8 +21,9 @@ COPY ./tools/wordpress_setup.sh /
 COPY ./conf/www.conf /etc/php82/php-fpm.d/www.conf
 COPY ./conf/php.ini /etc/php82/conf.d/custom.ini
 
-WORKDIR /var/www/html
-
 RUN chmod +x /wordpress_setup.sh 
 
+WORKDIR /var/www/html
+
 ENTRYPOINT ["sh", "/wordpress_setup.sh"]
+CMD ["php-fpm82", "-F", "-R"]

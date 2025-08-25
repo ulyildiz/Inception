@@ -55,7 +55,7 @@ if [ ! -f "${WP_PATH}/wp-config.php" ]; then
 	fi
 fi
 
-if [ ! wp-cli.phar core is-installed --path="${WP_PATH}" --allow-root ]; then
+if ! wp-cli.phar core is-installed --url="${WP_URL}" --path="${WP_PATH}" --allow-root ; then
 	echo -e "${YELLOW}Installing WordPress...${RESET}"
 	if ! wp-cli.phar core install --url="${WP_URL}" \
 		--title="${WP_TITLE}" \
@@ -70,28 +70,19 @@ if [ ! wp-cli.phar core is-installed --path="${WP_PATH}" --allow-root ]; then
 	fi
 fi
 
-echo -e "${YELLOW}Creating User...${RESET}"
-if ! wp-cli.phar user create ${WP_USER} ${WP_USER_EMAIL} \
-	--user_pass=${WP_USER_PASSWORD} \
-	--role=subscriber \
-	--path="${WP_PATH}" \
-	--allow-root; then
-	echo -e "${RED}Failed to create WordPress user. Continuing...${RESET}"
-	exit 1
-fi
-
-chown -R www:www "${WP_PATH}"
-chmod -R 755 "${WP_PATH}"
-
-# Ensure index.php exists and is readable
-if [ -f "${WP_PATH}/index.php" ]; then
-	chmod 644 "${WP_PATH}/index.php"
-	echo -e "${GREEN}WordPress index.php is ready${RESET}"
-else
-	echo -e "${RED}Warning: WordPress index.php not found!${RESET}"
+if ! wp-cli.phar user get ${WP_USER} --path="${WP_PATH}" --allow-root; then
+	echo -e "${YELLOW}Creating User...${RESET}"
+	if ! wp-cli.phar user create ${WP_USER} ${WP_USER_EMAIL} \
+		--user_pass=${WP_USER_PASSWORD} \
+		--role=subscriber \
+		--path="${WP_PATH}" \
+		--allow-root; then
+		echo -e "${RED}Failed to create WordPress user. Continuing...${RESET}"
+		exit 1
+	fi
 fi
 
 echo -e "${GREEN}WordPress setup completed!${RESET}"
 echo -e "${YELLOW}Starting${RESET}"
 
-exec /usr/sbin/php-fpm82 -F -R
+exec "$@"

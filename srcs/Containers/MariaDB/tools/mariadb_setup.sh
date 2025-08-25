@@ -17,46 +17,29 @@ echo -e "${BLUE}[MariaDB setup]${RESET}"
 
 if [ ! -d "/var/lib/mysql/mysql" ]; then
   echo -e "${YELLOW}Initializing MariaDB data directory...${RESET}"
-  mariadb-install-db --basedir=/usr --datadir=/var/lib/mysql --skip-test-db 
+  mariadb-install-db --user=mysql --basedir=/usr --datadir=/var/lib/mysql --skip-test-db --rpm
 fi
 chown -R mysql:mysql /var/lib/mysql
 
-#configure mariadb users privileges
-
-echo -e "${YELLOW}Configuring MariaDB users and privileges...${RESET}"
-
-# Start MariaDB temporarily for configuration
-mariadbd --skip-networking &
-sleep 10
-
-# Only configure users and database on first run
 if [ ! -f "/var/lib/mysql/.srcs_mariadb" ]; then
-    echo -e "${YELLOW}First run detected, configuring users and database...${RESET}"
-    
-    echo -e "${YELLOW}Setting root user password...${RESET}"
-    mariadb -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '${MARIADB_ROOT_PASSWORD}'; FLUSH PRIVILEGES;"
+  echo -e "${YELLOW}First run detected, configuring users and database...${RESET}"
 
-    echo -e "${YELLOW}Creating user ${MARIADB_USER} if not exists...${RESET}"
-    mariadb -u root -p"${MARIADB_ROOT_PASSWORD}" -e "CREATE USER IF NOT EXISTS '${MARIADB_USER}'@'%' IDENTIFIED BY '${MARIADB_USER_PASSWORD}'; FLUSH PRIVILEGES;"
+  echo "USE mysql;" > /init.sql
+  echo "FLUSH PRIVILEGES;" >> /init.sql
+  echo "CREATE USER IF NOT EXISTS '${MARIADB_USER}'@'%' IDENTIFIED BY '${MARIADB_USER_PASSWORD}';" >> /init.sql
+  echo "CREATE DATABASE IF NOT EXISTS \`${MARIADB_DATABASE}\`;" >> /init.sql
+  echo "GRANT ALL PRIVILEGES ON \`${MARIADB_DATABASE}\`.* TO '${MARIADB_USER}'@'%';" >> /init.sql
+  echo "ALTER USER 'root'@'localhost' IDENTIFIED BY '${MARIADB_ROOT_PASSWORD}';" >> /init.sql
+  echo "FLUSH PRIVILEGES;" >> /init.sql
 
-    echo -e "${YELLOW}Creating ${MARIADB_DATABASE}...${RESET}"
-    mariadb -u root -p"${MARIADB_ROOT_PASSWORD}" -e "CREATE DATABASE IF NOT EXISTS \`${MARIADB_DATABASE}\`; FLUSH PRIVILEGES;"
+  chown mysql:mysql /init.sql
 
-    echo -e "${YELLOW}Granting privileges to ${MARIADB_USER} user on ${MARIADB_DATABASE}...${RESET}"
-    mariadb -u root -p"${MARIADB_ROOT_PASSWORD}" -e "GRANT ALL PRIVILEGES ON \`${MARIADB_DATABASE}\`.* TO '${MARIADB_USER}'@'%'; FLUSH PRIVILEGES;"
+  mariadbd --bootstrap --user=mysql < /init.sql
+  touch /var/lib/mysql/.srcs_mariadb
   
-    echo -e "${YELLOW}Apply privileges...${RESET}"
-    mariadb -u root -p"${MARIADB_ROOT_PASSWORD}" -e "FLUSH PRIVILEGES;"
-    
-    # Create marker file to indicate initialization is complete
-    touch /var/lib/mysql/.srcs_mariadb
-    
-    echo -e "${GREEN}MariaDB users and privileges configured successfully.${RESET}"
+  echo -e "${GREEN}MariaDB users and privileges configured successfully.${RESET}"
 else
-    echo -e "${YELLOW}MariaDB already configured, skipping user setup...${RESET}"
+  echo -e "${YELLOW}MariaDB already configured, skipping user setup...${RESET}"
 fi
-
-# Stop temporary MariaDB
-mariadb-admin -u root -p"${MARIADB_ROOT_PASSWORD}" shutdown
 
 exec /usr/bin/mariadbd-safe --datadir='/var/lib/mysql'

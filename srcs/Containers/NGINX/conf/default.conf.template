@@ -1,37 +1,24 @@
 server {
-	listen 443 ssl;
-	listen [::]:443 ssl;
-	http2 on;
+	listen	443 ssl;
+	listen	[::]:443 ssl;
+	http2	on;
 
 	server_name ${DOMAIN_NAME};
 
 	# SSL Configuration
-	ssl_certificate ${SSL_CERT_PATH};
-	ssl_certificate_key ${SSL_KEY_PATH};
-	ssl_protocols ${SSL_PROTOCOLS};
+	ssl_certificate		${SSL_CERT_PATH};
+	ssl_certificate_key	${SSL_KEY_PATH};
+	ssl_protocols		TLSv1.2 TLSv1.3;
 
 	# Document root
-	root ${WEB_ROOT};
-	index index.html index.htm index.php;
+	root	/var/www/html;
+	index	index.php;
 
-	# Main location block
-	location / {
-		try_files $uri $uri/ /index.php?$query_string;
-		index index.php index.html index.htm;
-	}
-
-	# PHP processing (if needed for WordPress)
 	location ~ \.php$ {
-		try_files $uri =404;
 		fastcgi_pass wordpress:9000;
 		fastcgi_index index.php;
 		fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
 		include fastcgi_params;
 		fastcgi_read_timeout 300;
-	}
-
-	# Deny access to hidden files
-	location ~ /\. {
-		deny all;
 	}
 }
