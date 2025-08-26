@@ -13,4 +13,4 @@ RUN	mkdir -p /var/log/mysql /run/mysqld && \
 RUN chmod +x /mariadb_setup.sh
 
 ENTRYPOINT ["sh", "/mariadb_setup.sh"]
-CMD ["/usr/bin/mariadbd", "--datadir=/var/lib/mysql"]
+CMD ["/usr/bin/mariadbd"]
