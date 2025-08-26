@@ -5,14 +5,10 @@ RUN		apk update && apk upgrade && \
 		apk add --no-cache openssl && \
 		apk add --no-cache gettext
 
-RUN		adduser -D -g 'www' www && \
-		mkdir -p /www && \
+RUN		mkdir -p /www && \
 		mkdir -p /var/www/html && \
-		mkdir -p /etc/nginx/ssl && \
-		chown -R www:www /var/lib/nginx && \
-		chown -R www:www /www && \
-		chown -R www:www /var/www/html
-
+		mkdir -p /etc/nginx/ssl
+		
 COPY	./tools/nginx_setup.sh /
 COPY	./conf/default.conf.template /etc/nginx/http.d/default.conf.template
 

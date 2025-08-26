@@ -19,7 +19,6 @@ if [ ! -d "/var/lib/mysql/mysql" ]; then
   echo -e "${YELLOW}Initializing MariaDB data directory...${RESET}"
   mariadb-install-db --basedir=/usr --datadir=/var/lib/mysql --skip-test-db --rpm
 fi
-chown -R mysql:mysql /var/lib/mysql
 
 if [ ! -f "/var/lib/mysql/.srcs_mariadb" ]; then
   echo -e "${YELLOW}First run detected, configuring users and database...${RESET}"
@@ -31,8 +30,6 @@ if [ ! -f "/var/lib/mysql/.srcs_mariadb" ]; then
   echo "GRANT ALL PRIVILEGES ON \`${MARIADB_DATABASE}\`.* TO '${MARIADB_USER}'@'%';" >> /init.sql
   echo "ALTER USER 'root'@'localhost' IDENTIFIED BY '${MARIADB_ROOT_PASSWORD}';" >> /init.sql
   echo "FLUSH PRIVILEGES;" >> /init.sql
-
-  chown mysql:mysql /init.sql
 
   mariadbd --bootstrap < /init.sql
   touch /var/lib/mysql/.srcs_mariadb

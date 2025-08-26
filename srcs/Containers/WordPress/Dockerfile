@@ -11,11 +11,8 @@ RUN wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.ph
     && mv wp-cli.phar /usr/local/bin/wp-cli.phar 
 RUN ln -sf /usr/bin/php82 /usr/bin/php
 
-RUN adduser -D -g 'www' www && \
-    mkdir -p /var/www/html && \
-    chown -R www:www /var/www/html && \
+RUN mkdir -p /var/www/html && \
     chmod -R 777 /var/www/html
-
 
 COPY ./tools/wordpress_setup.sh /
 COPY ./conf/www.conf /etc/php82/php-fpm.d/www.conf
