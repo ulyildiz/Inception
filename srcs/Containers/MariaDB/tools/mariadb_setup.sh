@@ -17,7 +17,7 @@ echo -e "${BLUE}[MariaDB setup]${RESET}"
 
 if [ ! -d "/var/lib/mysql/mysql" ]; then
   echo -e "${YELLOW}Initializing MariaDB data directory...${RESET}"
-  mariadb-install-db --user=mysql --basedir=/usr --datadir=/var/lib/mysql --skip-test-db --rpm
+  mariadb-install-db --basedir=/usr --datadir=/var/lib/mysql --skip-test-db --rpm
 fi
 chown -R mysql:mysql /var/lib/mysql
 
@@ -34,7 +34,7 @@ if [ ! -f "/var/lib/mysql/.srcs_mariadb" ]; then
 
   chown mysql:mysql /init.sql
 
-  mariadbd --bootstrap --user=mysql < /init.sql
+  mariadbd --bootstrap < /init.sql
   touch /var/lib/mysql/.srcs_mariadb
   
   echo -e "${GREEN}MariaDB users and privileges configured successfully.${RESET}"
@@ -42,4 +42,4 @@ else
   echo -e "${YELLOW}MariaDB already configured, skipping user setup...${RESET}"
 fi
 
-exec /usr/bin/mariadbd-safe --datadir='/var/lib/mysql'
+exec "$@"

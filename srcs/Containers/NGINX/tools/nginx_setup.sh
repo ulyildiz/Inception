@@ -16,10 +16,12 @@ set +a
 if [ ! -f "${SSL_CERT_PATH}" ]; then
     echo -e "${YELLOW}Generating SSL certificate for ${DOMAIN_NAME}...${RESET}"
     
-    openssl genrsa -out "${SSL_KEY_PATH}" 2048
-    
+    if [ ! -f "${SSL_KEY_PATH}" ]; then
+        openssl genrsa -out "${SSL_KEY_PATH}" 2048
+    fi
+
     openssl req -x509 -new -days 365 -subj "/C=TR/ST=Kocaeli/L=Gebze/O=42/CN=${DOMAIN_NAME}"\
-    -key "${SSL_KEY_PATH}" -out "${SSL_CERT_PATH}"
+        -key "${SSL_KEY_PATH}" -out "${SSL_CERT_PATH}"
     
     echo -e "${GREEN}SSL certificate generated successfully!${RESET}"
 else
