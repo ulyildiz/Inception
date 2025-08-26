@@ -12,6 +12,8 @@ RUN wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.ph
 RUN ln -sf /usr/bin/php82 /usr/bin/php
 
 RUN mkdir -p /var/www/html && \
+	adduser -D -g 'www' www && \
+	chown -R www:www /var/www/html && \
     chmod -R 777 /var/www/html
 
 COPY ./tools/wordpress_setup.sh /
@@ -23,4 +25,4 @@ RUN chmod +x /wordpress_setup.sh
 WORKDIR /var/www/html
 
 ENTRYPOINT ["sh", "/wordpress_setup.sh"]
-CMD ["php-fpm82", "-F", "-R"]
+CMD ["php-fpm82", "-F"]

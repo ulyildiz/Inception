@@ -8,6 +8,4 @@ datadir = /var/lib/mysql
 socket = /run/mysqld/mysqld.sock
 
 character-set-server = utf8mb4
-collation-server = utf8mb4_unicode_ci
 log_error = /var/log/mysql/error.log
-lc-messages = en_US
