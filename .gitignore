@@ -1,0 +1,9 @@
+# Real secrets and environment files - never commit these.
+# Only the *.example templates below should be tracked in git.
+
+secrets/*
+!secrets/*.example
+!secrets/README.md
+
+srcs/Containers/.env
+!srcs/Containers/.env.example
