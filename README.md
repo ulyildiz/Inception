@@ -145,3 +145,7 @@ The `mariadb` and `wordpress` named volumes are bind-mounted to the host filesys
 - `${HOME}/${LOGIN}/data/wordpress` → `/var/www/html` (shared between `wordpress` and `nginx`)
 
 `make fclean` deletes this data directory entirely — use it only when you actually want a clean slate.
+
+## License
+
+MIT — see [LICENSE](LICENSE).
